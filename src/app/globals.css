@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  /* --color-dark-600: #0A0A0A;
+  --color-dark-700: #0A0A0A;
+  --color-dark-900: #00292B;
+  --color-blue-500: #ff5733; */
+
+  /* Container sizes */
+  --container-max-width-sm: 40rem;
+  --container-max-width-md: 48rem;
+  --container-max-width-lg: 64rem;
+  --container-max-width-xl: 80rem;
+  --container-max-width-2xl: 96rem;
+  --container-max-width-3xl: 90rem;
+  --container-max-width-4xl: 120rem;
+}
+
+@theme {
+  --color-dark-600: #0A0A0A;
+  --color-dark-700: #0A0A0A;
+  --color-dark-900: #00292B;
+  --color-blue-500: #ff5733;
+  --color-gray-400: #71717A;
+
+  --animate-in: enter 300ms ease-out;
+  --animate-out: exit 300ms ease-in;
+
+  @keyframes enter {
+    from {
+      opacity: var(--tw-enter-opacity, 1);
+      transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
+    }
+  }
+
+  @keyframes exit {
+    to {
+      opacity: var(--tw-exit-opacity, 1);
+      transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
+    }
+  }
+}
+
+@utility animate-in {
+  animation-name: enter;
+  animation-duration: 300ms;
+  --tw-enter-opacity: 1;
+  --tw-enter-scale: 1;
+  --tw-enter-rotate: 0;
+  --tw-enter-translate-x: 0;
+  --tw-enter-translate-y: 0;
+}
+
+@utility animate-out {
+  animation-name: exit;
+  animation-duration: 300ms;
+  --tw-exit-opacity: 1;
+  --tw-exit-scale: 1;
+  --tw-exit-rotate: 0;
+  --tw-exit-translate-x: 0;
+  --tw-exit-translate-y: 0;
+}
+
+@utility fade-in-0 {
+  --tw-enter-opacity: 0;
+}
+
+@utility fade-out-0 {
+  --tw-exit-opacity: 0;
+}
+
+@utility zoom-in-95 {
+  --tw-enter-scale: 0.95;
+}
+
+@utility zoom-out-95 {
+  --tw-exit-scale: 0.95;
+}
+
+@utility slide-in-from-top-48 {
+  --tw-enter-translate-y: -48%;
+}
+
+@utility slide-in-from-left-1/2 {
+  --tw-enter-translate-x: -50%;
+}
+
+@utility slide-out-to-top-48 {
+  --tw-exit-translate-y: -48%;
+}
+
+@utility slide-out-to-left-1/2 {
+  --tw-exit-translate-x: -50%;
+}
+
+
+/* Custom breakpoints (Tailwind v4 way) */
+@media (min-width: 90rem) {
+  .container {
+    max-width: var(--container-max-width-3xl);
+  }
+}
+
+@media (min-width: 120rem) {
+  .container {
+    max-width: var(--container-max-width-4xl);
+  }
+}
+
+/* Animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Utility class */
+.animate-fadeIn {
+  animation: fadeIn 0.15s ease-out;
+}
+
+/* Reusable input */
+.Input {
+  @apply w-full mt-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none transition-all duration-300 focus:ring-3 focus:ring-gray-200;
+}
