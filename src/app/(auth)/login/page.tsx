@@ -12,7 +12,7 @@ import { toast } from "sonner"
 type LoginForm = {
     email: string
     password: string
-    role: "sale_rep" | "manager"
+    role: "sales_rep" | "manager"
 }
 
 
@@ -21,8 +21,8 @@ const LoginPage = () => {
     const { mutate: login, isPending } = useApiMutation({ url: "/auth/login",})
     const onSubmit = async (data: LoginForm) => {
         login(data, {
-            onSuccess: (_data: any) => {
-                toast.success(_data?.access_token, { id: "login-success" })
+            onSuccess: (res: any) => {
+                toast.success(res?.message, { id: "login-success" })
                 localStorage.setItem("userEmail", data.email)
                 router.push("/verify-otp")
             }
@@ -89,7 +89,7 @@ const LoginPage = () => {
                             >
                                 <span>Login as</span>
                                 <div className="flex gap-10">
-                                    <RadioGroupItem value="sale_rep" label="Sales Rep" id="sale_rep" />
+                                    <RadioGroupItem value="sales_rep" label="Sales Rep" id="sales_rep" />
                                     <RadioGroupItem value="manager" label="Manager" id="manager" />
                                 </div>
                             </RadioGroup>

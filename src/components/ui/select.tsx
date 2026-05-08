@@ -71,16 +71,16 @@ const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: S
     };
 
     const renderTriggerContent = () => {
-        if (Array.isArray(hook.selected)) {
-            if (hook.selected.length === 0) return placeholder;
-            const selectedItems = hook.filtered.filter(i => (hook.selected as string[]).includes(i.value));
+        if (Array.isArray(hook.value)) {
+            if (hook.value.length === 0) return placeholder;
+            const selectedItems = hook.filtered.filter(i => (hook.value as string[]).includes(i.value));
             if (selectedItems.length <= 2) {
                 return selectedItems.map(i => i.label).join(", ");
             }
             return `${selectedItems.length} selected`;
         }
-        if (hook.selected) {
-            const selectedItem = hook.filtered.find(i => i.value === hook.selected);
+        if (hook.value) {
+            const selectedItem = hook.filtered.find(i => i.value === hook.value);
             return selectedItem?.label || placeholder;
         }
         return placeholder;
@@ -104,7 +104,7 @@ const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: S
                             {renderTriggerContent()}
                         </span>
                         <span className="flex items-center gap-1">
-                            {hook.isClearable && (Array.isArray(hook.selected) ? hook.selected.length > 0 : !!hook.selected) && (
+                            {hook.isClearable && (Array.isArray(hook.value) ? hook.value.length > 0 : !!hook.value) && (
                                 <button
                                     type="button"
                                     onClick={hook.clear}

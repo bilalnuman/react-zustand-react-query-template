@@ -1,20 +1,20 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 const apiClient = axios.create({
     baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
-    withCredentials:true
+    withCredentials: true
 });
 
 apiClient.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
-        try {
+        // try {
 
-            if (config.headers) {
-                const res = await axios.post("/api/get-token");
-                config.headers.Authorization = `Bearer ${res.data.token}`;
-            }
-        } catch (error) {
-            console.error("Error fetching token from cookie:", error);
-        }
+        //     if (config.headers) {
+        //         const res = await axios.post("/api/get-token");
+        //         config.headers.Authorization = `Bearer ${res.data.token}`;
+        //     }
+        // } catch (error) {
+        //     // Error fetching token
+        // }
 
         return config;
     },
@@ -39,19 +39,26 @@ apiClient.interceptors.response.use(
         }
 
         if (status === 403) {
-            console.error("Forbidden access");
+            // Forbidden access
         }
 
         if (status >= 500) {
-            console.error("Server error");
+            // Server error
         }
-        const rawMessage =
-            typeof error?.response?.data === "string"
-                ? error.response.data
-                : JSON.stringify(error?.response?.data);
+        const errorData = error?.response?.data;
+
+        let message = 'Something went wrong';
+
+        if (errorData) {
+            const { statusCode, timestamp, path, ...cleaned } = errorData;
+
+            message = Object.values(cleaned)
+                .flat()
+                .join(', ');
+        }
 
         return Promise.reject({
-            message: rawMessage.replace(/[{}\[\]"']/g, "") || "Something went wrong",
+            message,
             status,
         });
     }

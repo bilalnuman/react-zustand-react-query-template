@@ -24,7 +24,7 @@ const ManagerPage = (props: {
     const searchParams = use(props.searchParams);
     const [search, setSearch] = useState("");
     const { data: otpData, isLoading, isFetching } = useApiQuery<any>({
-        url: "/sales/commission/lines",
+        url: "/auth/me",
     });
     const {
         register,
@@ -33,6 +33,11 @@ const ManagerPage = (props: {
         watch,
         formState: { errors },
     } = useForm({
+        defaultValues: {
+            name: "",
+            frontend: "",
+            backend: "",
+        }
     })
 
 
@@ -72,7 +77,6 @@ const ManagerPage = (props: {
             )
         },
     ];
-    console.log(isFetching)
 
     return (
         <>
@@ -118,7 +122,6 @@ const ManagerPage = (props: {
                 </div>
             </div>
             <form onSubmit={handleSubmit((data) => {
-                console.log("Form Data:", data);
                 // Form submitted
             })} className="mb-6">
                 <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded shadow">
@@ -154,7 +157,6 @@ const ManagerPage = (props: {
                             value={watch("backend")}
                             {...register("backend", { required: "Dropdown is required" })}
                             onChange={(val: any) => {
-                                console.log(val)
                                 setValue("backend", val.selected, { shouldValidate: true });
                             }}
                         />
@@ -181,8 +183,8 @@ const ManagerPage = (props: {
                     columns={columns}
                     data={filteredUsers}
                     selectable={true}
-                    onSelectionChange={(selected) => console.log("Selected users:", selected)}
-                    onRowClick={(user) => console.log("Clicked user:", user)}
+                    onSelectionChange={(selected) => {}}
+                    onRowClick={(user) => {}}
                     isHeadingSticky={true}
                     classNames={{
                         container: "h-full",

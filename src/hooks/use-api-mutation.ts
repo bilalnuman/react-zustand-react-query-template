@@ -48,7 +48,6 @@ export const useApiMutation = <TData, TVariables>({
       options?.onSuccess?.(data, variables, context, undefined as never);
     },
     onError: (error: Error, variables, context) => {
-      console.log(error)
       const apiError = error as any;
       toast.error(errorMessage || apiError?.message || "Something went wrong",{id:"error",closeButton:true});
       options?.onError?.(error, variables, context, undefined as never);

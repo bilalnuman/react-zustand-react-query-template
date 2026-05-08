@@ -1,43 +1,50 @@
 "use client"
 import { Button } from "@/components/ui/button";
-import Dropdown from "@/components/ui/select"
+import Select from "@/components/ui/select"
 import FieldGroup from "@/components/ui/fieldGroup";
 import Modal from "@/components/ui/modal";
 import Table, { Column } from "@/components/ui/table";
 import Checkbox from "@/components/ui/checkbox";
-import { use, useId, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { use, useEffect, useId, useMemo, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 import { Icons } from "@/components/ui/icons";
+import { useTableFilters } from "@/hooks/useTableFilters";
 
 const DashboardPage = (props: {
-  
   params: Promise<any>;
   searchParams: Promise<any>;
 }) => {
   const nameId = useId();
-  const dropdownId = useId();
+  const frontendId = useId();
+  const backendId = useId();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const params = use(props.params);
   const searchParams = use(props.searchParams);
-  const [search, setSearch] = useState("");
+  const { setFilter, filters, resetFilters } = useTableFilters()
+
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
+    reset,
+    control,
+    formState: { errors, isDirty},
   } = useForm({
+    defaultValues: {
+      name: "",
+      frontend: "",
+      backend: "",
+      status: false,
+    }
   })
 
 
-
-  const users = Array.from({ length: 68 }, (_, i) => ({
+  const users = Array.from({ length: 16 }, (_, i) => ({
     id: i + 1,
     name: `User ${i + 1}`,
     email: `user${i + 1}@example.com`,
     role: i % 3 === 0 ? "Admin" : i % 2 === 0 ? "Editor" : "User",
-    status: i % 4 === 0 ? "Inactive" : "Active"
+    status: i % 4 === 0 ? "Inactive" : "Active",
   }));
 
   const filteredUsers = useMemo(() => {
@@ -45,9 +52,9 @@ const DashboardPage = (props: {
       [user.name, user.email, user.role, user.status]
         .join(" ")
         .toLowerCase()
-        .includes(search.toLowerCase())
+        .includes(filters?.search ? filters?.search?.toLowerCase() : "")
     );
-  }, [search, users]);
+  }, [users, filters?.search]);
 
   const columns: Column<typeof users[0]>[] = [
     { key: "name", label: "Name", sortable: true },
@@ -67,12 +74,21 @@ const DashboardPage = (props: {
       )
     },
   ];
-
-
+  useEffect(() => {
+    setTimeout(() => {
+      reset({
+        name: "bilal",
+        frontend: "react",
+        status: true,
+        backend: "python",
+      })
+    }, 5000)
+  }, [])
   return (
     <>
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <h1 className="text-2xl font-bold">Dashboard
+        </h1>
         <div>
 
           <Modal
@@ -109,73 +125,108 @@ const DashboardPage = (props: {
             </div>
           </Modal> */}
         </div>
-      </div>
+      </div >
       <form onSubmit={handleSubmit((data) => {
-        console.log("Form Data:", data);
         // Form submitted
       })} className="mb-6">
         <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded shadow">
           <FieldGroup id={nameId} label="Name" errorMessage={errors.name?.message as string}>
             <input id={nameId} className="Input" placeholder="Enter Name" {...register("name", { required: "Name is required" })} />
           </FieldGroup>
-          <FieldGroup id={dropdownId} label="Dropdown"
+          <FieldGroup id={frontendId} label="Dropdown"
             errorMessage={errors.frontend?.message as string}
           >
-            <Dropdown
-              items={[
-                { label: "React", value: "react" },
-                { label: "Vue", value: "vue", },
-                { label: "Node", value: "node", },
-              ]}
-              value={watch("frontend")}
-              isMulti={true}
-              {...register("frontend", { required: "Dropdown is required" })}
-              onChange={(val: any) => {
-                setValue("frontend", val.selected, { shouldValidate: true });
-              }}
+            <Controller
+              name="frontend"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  asyncLoad={async (query) => {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    const allItems = [
+                      { label: "React", value: "react" },
+                      { label: "Vue", value: "vue", },
+                      { label: "Node", value: "node", },
+                      { label: "Angular", value: "angular" },
+                      { label: "Svelte", value: "svelte" },
+                    ];
+                    return allItems.filter(i => i.label.toLowerCase().includes(query.toLowerCase()));
+                  }}
+                  items={[
+                    { label: "React", value: "react" },
+                    { label: "Vue", value: "vue", },
+                    { label: "Node", value: "node", },
+                  ]}
+                />
+              )}
             />
           </FieldGroup>
-          <FieldGroup id={dropdownId} label="Dropdown"
+          <FieldGroup id={backendId} label="Dropdown"
             errorMessage={errors.backend?.message as string}
           >
-            <Dropdown
-              items={[
-                { label: "Python", value: "python" },
-                { label: "JavaScript", value: "javascript", },
-                { label: "Node", value: "node", },
-              ]}
-              value={watch("backend")}
-              {...register("backend", { required: "Dropdown is required" })}
-              onChange={(val: any) => {
-                console.log(val)
-                setValue("backend", val.selected, { shouldValidate: true });
-              }}
+            <Controller
+              name="backend"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  items={[
+                    { label: "Python", value: "python" },
+                    { label: "JavaScript", value: "javascript", },
+                    { label: "Node", value: "node", },
+                  ]}
+                />
+              )}
             />
           </FieldGroup>
           <div className="flex items-end pb-2">
-            <Checkbox id="active-status" label="Active Status" defaultChecked />
+            <Controller
+              name="status"
+              control={control}
+              render={({ field }) => (
+                <Checkbox
+                  id="active-status"
+                  label="Active Status"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
           </div>
         </div>
-        <Button type="submit" className="mt-4">Submit</Button>
+        <Button type="submit" className="mt-4" disabled={!isDirty}>Submit</Button>
       </form >
 
       <div className="bg-white h-[calc(100vh-510px)] overflow-hidden">
         <div className="flex justify-between items-center mb-4 sticky top-0 bg-white z-10">
           <h2 className="text-xl font-semibold mb-4">User Management</h2>
-          <input
-            type="text"
-            placeholder="Search users..."
-            className={twMerge("Input max-w-xs")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <div className="flex items-center gap-3">
+            {!!Object.keys(filters)?.length && <Button onClick={() => resetFilters()}>Clear</Button>}
+            <Button onClick={() =>
+              setFilter({ brand: "Dell", }, { resetKeys: ["search", "page"], }
+              )
+            }>Brand</Button>
+            <input
+              type="text"
+              placeholder="Search users..."
+              className={twMerge("Input max-w-xs")}
+              value={filters?.search ?? ""}
+              onChange={(e) =>
+                setFilter({
+                  search: e.target.value,
+                  page: 1,
+                })
+              }
+            />
+          </div>
         </div>
         <Table
           columns={columns}
           data={filteredUsers}
           selectable={true}
-          onSelectionChange={(selected) => console.log("Selected users:", selected)}
-          onRowClick={(user) => console.log("Clicked user:", user)}
+          onSelectionChange={(selected) => {}}
+          onRowClick={(user) => {}}
           isHeadingSticky={true}
           classNames={{
             container: "h-full",

@@ -26,7 +26,6 @@ export const useApiQuery = <T>({
     queryKey: queryKey || [url],
     queryFn: async () => {
       const response = await apiClient.get(url, { params });
-      console.log(response, 'response')
       return response.data;
     },
     initialData: persistKey ? (persistedData[persistKey] as T) : undefined,

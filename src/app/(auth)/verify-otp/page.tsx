@@ -1,5 +1,6 @@
 "use client"
 import { toast } from "sonner"
+import { useEffect, useState } from "react"
 import FormProviderWrapper from "../formWrapper"
 import OTPInput from "@/components/ui/OTPInput"
 import FieldGroup from "@/components/ui/fieldGroup"
@@ -21,7 +22,11 @@ interface OtpStatusResponse {
 
 const VerifyOtpPage = () => {
   
-  const email = localStorage.getItem("userEmail")
+  const [email, setEmail] = useState<string | null>(null)
+
+  useEffect(() => {
+    setEmail(localStorage.getItem("userEmail"))
+  }, [])
   
   const { mutate: login, isPending } = useApiMutation({
     url: "/auth/verify-otp",

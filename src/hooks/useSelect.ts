@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export type SelectItem = {
     label: string;
@@ -17,7 +17,8 @@ export type UseSelectProps = {
     isSearchable?: boolean;
     isCaretIconVisible?: boolean;
     isClearable?: boolean;
-    onChange?: (hook: UseSelectReturn, val: any) => void;
+    isDbSearch?:boolean;
+    onChange?: (val: any, hook: UseSelectReturn, item: any) => void;
     asyncLoad?: (query: string) => Promise<SelectItem[]>;
 };
 
@@ -29,6 +30,7 @@ export const useSelect = ({
     isSearchable = true,
     isCaretIconVisible = true,
     isClearable = false,
+    isDbSearch=false,
     maxSelect,
     onChange,
     asyncLoad,
@@ -37,15 +39,30 @@ export const useSelect = ({
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<SelectItem[]>(items);
+
+    useEffect(() => {
+        setData(items);
+    }, [items]);
+
     const [internal, setInternal] = useState<string | string[]>(
         defaultValue ?? (isMulti ? [] : "")
     );
 
-    const selected = value ?? internal;
+    const valueState = value ?? internal;
 
-    // 🔥 Async search
+    // 🔥 Async search fallback
     useEffect(() => {
-        if (!asyncLoad) return;
+        if (!asyncLoad || !search) {
+            if (!search) setData(items);
+            return;
+        }
+
+        // Check if we have local matches first
+        const hasLocalMatches = items.some(item =>
+            item.label.toLowerCase().includes(search.toLowerCase())
+        );
+
+        if (hasLocalMatches && !isDbSearch) return;
 
         const t = setTimeout(async () => {
             setLoading(true);
@@ -55,16 +72,32 @@ export const useSelect = ({
         }, 300);
 
         return () => clearTimeout(t);
-    }, [search, asyncLoad]);
+    }, [search, asyncLoad, items, isDbSearch]);
 
-    // 🔍 Sync filter fallback
+    // 🔍 Sync filter with fallback logic
     const filtered = useMemo(() => {
-        if (asyncLoad) return data;
-
-        return data.filter((item) =>
+        const localMatches = items.filter((item) =>
             item.label.toLowerCase().includes(search.toLowerCase())
         );
-    }, [search, data, asyncLoad]);
+
+        // If isDbSearch is enabled, we merge local results with async data
+        if (isDbSearch && search && asyncLoad) {
+            // Use a Map to ensure unique values by 'value' key
+            const merged = new Map();
+            localMatches.forEach(item => merged.set(item.value, item));
+            data.forEach(item => merged.set(item.value, item));
+            return Array.from(merged.values());
+        }
+
+        // If we have local matches, prioritize them (original hybrid logic)
+        if (localMatches.length > 0) return localMatches;
+
+        // Otherwise, if we have a search query and no local matches, return the async data
+        if (search && asyncLoad) return data;
+
+        // Default to local matches (which will be empty if no search or no matches)
+        return localMatches;
+    }, [search, items, data, asyncLoad, isDbSearch]);
 
     // 📦 Grouping
     const grouped = useMemo(() => {
@@ -80,20 +113,20 @@ export const useSelect = ({
     }, [filtered]);
 
     // ✅ Selected check
-    const isSelected = (val: string) => {
+    const isSelected = useCallback((val: string) => {
         return isMulti
-            ? (selected as string[]).includes(val)
-            : selected === val;
-    };
+            ? (valueState as string[]).includes(val)
+            : valueState === val;
+    }, [isMulti, valueState]);
 
     // 🎯 Select logic (single + multi + maxSelect)
-    const select = (item: SelectItem) => {
+    const select = useCallback((item: SelectItem) => {
         if (item.disabled) return;
 
         let newVal: any;
         let nextSelected: string | string[];
         if (isMulti) {
-            let current = (selected as string[]) || [];
+            let current = (valueState as string[]) || [];
             const exists = current.includes(item.value);
 
             if (exists) {
@@ -114,20 +147,21 @@ export const useSelect = ({
         }
 
         if (onChange) {
-            onChange({ ...hook, selected: nextSelected }, newVal);
+            // We pass a partial mock of the hook or just the values to avoid circular dependency
+            onChange(nextSelected, { value: nextSelected } as any, newVal);
         }
-    };
+    }, [isMulti, valueState, maxSelect, filtered, onChange]);
 
-    const clear = (e?: React.MouseEvent) => {
+    const clear = useCallback((e?: React.MouseEvent) => {
         e?.stopPropagation();
         const nextSelected = isMulti ? [] : "";
         setInternal(nextSelected);
         if (onChange) {
-            onChange({ ...hook, selected: nextSelected }, isMulti ? [] : null,);
+            onChange(nextSelected, { value: nextSelected } as any, isMulti ? [] : null);
         }
-    };
+    }, [isMulti, onChange]);
 
-    const hook = {
+    const hook = useMemo(() => ({
         // state
         open,
         setOpen,
@@ -140,14 +174,28 @@ export const useSelect = ({
         // data
         filtered,
         grouped,
-        selected,
+        value: valueState,
         isMulti,
         // actions
         select,
         isSelected,
         setInternal,
         clear
-    };
+    }), [
+        open,
+        search,
+        loading,
+        isSearchable,
+        isCaretIconVisible,
+        isClearable,
+        filtered,
+        grouped,
+        valueState,
+        isMulti,
+        select,
+        isSelected,
+        clear
+    ]);
 
     return hook;
 };
