@@ -1,0 +1,1 @@
+export const SalesRepCanNotAccessTheseRoutes = ["kpis", "team","ai-brief"]

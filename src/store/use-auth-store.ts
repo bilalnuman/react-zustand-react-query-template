@@ -1,23 +1,37 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { persist, createJSONStorage, devtools } from 'zustand/middleware';
+
+export interface User {
+  id: string;
+  email: string;
+  role: 'manager' | 'sales_rep';
+}
 
 interface AuthState {
-  accessToken: string | null;
-  userRole: string | null;
-  setToken: (token: string | null) => void;
-  setRole: (role: string | null) => void;
+  user: User | null;
+  setUser: (user: User | null) => void;
   clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   devtools(
-    (set) => ({
-      accessToken: null,
-      userRole: null,
-      setToken: (token) => set({ accessToken: token }),
-      setRole: (role) => set({ userRole: role }),
-      clearAuth: () => set({ accessToken: null, userRole: null }),
-    }),
+    persist(
+      (set) => ({
+        user: null,
+        accessToken: null,
+        userRole: null,
+
+        setUser: (user) =>
+          set({ user }),
+
+        clearAuth: () =>
+          set({ user: null }),
+      }),
+      {
+        name: 'auth-persistence',
+        storage: createJSONStorage(() => localStorage),
+      }
+    ),
     { name: 'AuthStore' }
   )
 );

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { SalesRepCanNotAccessTheseRoutes } from './constant.data/routes';
+const publicRoutes = ["login"]
 
 function decodeJwt(token: string) {
   try {
@@ -22,29 +24,26 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const payload = token ? decodeJwt(token) : null;
-  const role = payload?.role; // Assuming role is in the token payload
-  
-  // Protected routes
-  const isManagerRoute = pathname.startsWith('/manager');
-  const isSalesRoute = pathname.startsWith('/sales');
+  const role = payload?.role;
 
-  if (isManagerRoute && role !== 'manager') {
-    return NextResponse.redirect(new URL('/login', request.url));
+  const segments = pathname.split('/').filter(Boolean);
+
+  const currentRoute = segments[0];
+  if (role && publicRoutes.includes(currentRoute)) {
+    return NextResponse.redirect(
+      new URL('/', request.url)
+    );
   }
-
-  if (isSalesRoute && role !== 'sale_rep') {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
-  // Auth pages redirect
-  if ((pathname === '/login' || pathname === '/verify-otp') && role) {
-    const dashboard = role === 'manager' ? '/manager' : '/sales';
-    return NextResponse.redirect(new URL(dashboard, request.url));
+  if (role === 'sales_rep' && SalesRepCanNotAccessTheseRoutes.includes(currentRoute)
+  ) {
+    return NextResponse.redirect(
+      new URL('/unauthorized', request.url)
+    );
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/manager/:path*', '/sales/:path*', '/login', '/verify-otp'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

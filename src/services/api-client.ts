@@ -5,19 +5,7 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use(
-    async (config: InternalAxiosRequestConfig) => {
-        // try {
-
-        //     if (config.headers) {
-        //         const res = await axios.post("/api/get-token");
-        //         config.headers.Authorization = `Bearer ${res.data.token}`;
-        //     }
-        // } catch (error) {
-        //     // Error fetching token
-        // }
-
-        return config;
-    },
+    async (config: InternalAxiosRequestConfig) => config,
     (error: AxiosError) => Promise.reject(error)
 );
 
@@ -34,7 +22,7 @@ apiClient.interceptors.response.use(
 
         if (status === 401) {
             if (typeof window !== "undefined" && error.config?.url !== "/auth/login") {
-                window.location.href = "/login";
+                apiClient.post("/auth/refresh")
             }
         }
 
