@@ -1,17 +1,16 @@
 "use client"
 import { Button } from "@/components/ui/button";
-import Dropdown from "@/components/ui/select"
 import FieldGroup from "@/components/ui/fieldGroup";
 import Modal from "@/components/ui/modal";
 import Table, { Column } from "@/components/ui/table";
 import Checkbox from "@/components/ui/checkbox";
 import { use, useId, useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 import { Icons } from "@/components/ui/icons";
-import { useApiQuery } from "@/hooks/use-api-query";
-import Loading from "@/components/ui/loading";
 import Link from "next/link";
+import Select from "@/components/ui/select";
+import { REQUIRED } from "@/constant.data/form-validation-roules";
 
 const ManagerPage = (props: {
   params: Promise<any>;
@@ -22,18 +21,19 @@ const ManagerPage = (props: {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const params = use(props.params);
   const searchParams = use(props.searchParams);
+  console.log(params,searchParams)
   const [search, setSearch] = useState("");
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
+    formState: { errors, isDirty },
+    control,
   } = useForm({
     defaultValues: {
       name: "",
       frontend: "",
       backend: "",
+      status: true
     }
   })
 
@@ -123,46 +123,63 @@ const ManagerPage = (props: {
       })} className="mb-6">
         <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded shadow">
           <FieldGroup id={nameId} label="Name" errorMessage={errors.name?.message as string}>
-            <input id={nameId} className="Input" placeholder="Enter Name" {...register("name", { required: "Name is required" })} />
+            <input id={nameId} className="Input" placeholder="Enter Name" {...register("name", { required: REQUIRED })} />
           </FieldGroup>
           <FieldGroup id={dropdownId} label="Dropdown"
             errorMessage={errors.frontend?.message as string}
           >
-            <Dropdown
-              items={[
-                { label: "React", value: "react" },
-                { label: "Vue", value: "vue", },
-                { label: "Node", value: "node", },
-              ]}
-              value={watch("frontend")}
-              isMulti={true}
-              {...register("frontend", { required: "Dropdown is required" })}
-              onChange={(val: any) => {
-                setValue("frontend", val.selected, { shouldValidate: true });
-              }}
+            <Controller
+              name="frontend"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  items={[
+                    { label: "React", value: "react" },
+                    { label: "Vue", value: "vue", },
+                    { label: "Node", value: "node", },
+                  ]}
+                />
+              )}
             />
           </FieldGroup>
           <FieldGroup id={dropdownId} label="Dropdown"
             errorMessage={errors.backend?.message as string}
           >
-            <Dropdown
-              items={[
-                { label: "Python", value: "python" },
-                { label: "JavaScript", value: "javascript", },
-                { label: "Node", value: "node", },
-              ]}
-              value={watch("backend")}
-              {...register("backend", { required: "Dropdown is required" })}
-              onChange={(val: any) => {
-                setValue("backend", val.selected, { shouldValidate: true });
-              }}
+            <Controller
+              name="backend"
+              control={control}
+              rules={{ required: REQUIRED }}
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  items={[
+                    { label: "Python", value: "python" },
+                    { label: "JavaScript", value: "javascript", },
+                    { label: "Node", value: "node", },
+                  ]}
+                />
+              )}
             />
           </FieldGroup>
           <div className="flex items-end pb-2">
-            <Checkbox id="active-status" label="Active Status" defaultChecked />
+            <Controller
+              name="status"
+              control={control}
+              rules={{ required: REQUIRED }}
+              render={({ field }) => (
+                <Checkbox
+                  id="active-status"
+                  label="Active Status"
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              )}
+            />
           </div>
         </div>
-        <Button type="submit" className="mt-4">Submit</Button>
+
+        <Button type="submit" className="mt-4" disabled={!isDirty}>Submit</Button>
       </form >
 
       <div className="bg-white h-[calc(100vh-510px)] overflow-hidden">
