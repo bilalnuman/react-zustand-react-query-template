@@ -16,7 +16,6 @@ const Sidebar = () => {
   const { mutate: logout, isPending } = useApiMutation({ url: "/auth/logout", })
   const setUser = useAuthStore((s) => s.setUser);
   const user = useAuthStore((s) => s.user);
-
   const handleLogout = () => {
     logout({}, {
       onSuccess: (res: any) => {

@@ -4,6 +4,8 @@ import { persist, createJSONStorage, devtools } from 'zustand/middleware';
 export interface User {
   id: string;
   email: string;
+  name:string;
+  profile_url:string;
   role: 'manager' | 'sales_rep';
 }
 
