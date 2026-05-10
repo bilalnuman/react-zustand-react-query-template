@@ -80,5 +80,40 @@
     "profile": "Page de profil",
     "team": "Équipe",
     "unauthorized": "Page non autorisée"
+  },
+  "BackendMessages": {
+    "user_not_found": "Aucun compte trouvé avec cet e-mail.",
+    "invalid_password": "Le mot de passe que vous avez saisi est incorrect.",
+    "otp_expired": "Ce code a expiré. Veuillez en demander un nouveau.",
+    "invalid_otp": "Le code OTP que vous avez saisi est invalide.",
+    "unknown_error": "Une erreur inattendue s'est produite. Veuillez réessayer.",
+    "unauthorized": "Vous n'êtes pas autorisé à effectuer cette action.",
+    "forbidden": "Vous n'avez pas la permission d'accéder à cette ressource.",
+    "not_found": "La ressource demandée n'a pas été trouvée.",
+    "method_not_allowed": "Cette action n'est pas autorisée.",
+    "conflict": "Un conflit est survenu. Cet enregistrement existe peut-être déjà.",
+    "too_many_requests": "Trop de requêtes. Veuillez ralentir et réessayer plus tard.",
+    "internal_server_error": "Erreur serveur. Notre équipe a été notifiée.",
+    "service_unavailable": "Le service est temporairement indisponible. Veuillez réessayer plus tard.",
+    "gateway_timeout": "Le serveur a mis trop de temps à répondre.",
+    "email_already_exists": "Cet e-mail est déjà enregistré pour un autre compte.",
+    "session_expired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "account_locked": "Votre compte a été verrouillé en raison de trop nombreuses tentatives.",
+    "account_disabled": "Votre compte a été désactivé. Veuillez contacter le support.",
+    "file_too_large": "Le fichier téléchargé est trop volumineux.",
+    "invalid_file_type": "Ce type de fichier n'est pas pris en charge.",
+    "permission_denied": "Permission refusée.",
+    "validation_error": "Veuillez vérifier les informations fournies.",
+    "invalid_credentials":"Identifiants invalides"
+  },
+  "SuccessMessages": {
+    "login_success": "Connexion réussie.",
+    "logout_success": "Déconnexion réussie.",
+    "password_reset_success": "Votre mot de passe a été réinitialisé avec succès.",
+    "otp_sent_success": "Un code de vérification a été envoyé à votre adresse e-mail.",
+    "data_saved": "Les données ont été enregistrées avec succès.",
+    "update_success": "Informations mises à jour avec succès.",
+    "delete_success": "Élément supprimé avec succès.",
+    "operation_completed": "Opération terminée avec succès."
   }
 }

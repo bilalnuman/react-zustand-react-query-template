@@ -12,6 +12,7 @@ import { tokenService } from "@/services/tokenService"
 import { roleService } from "@/services/roleService"
 import axios from "axios"
 import { useTranslations } from "next-intl"
+import { useRouter } from "@/i18n/routing"
 
 type OTPForm = {
   otp: string
@@ -23,6 +24,7 @@ interface OtpStatusResponse {
 
 const VerifyOtpPage = () => {
   const tAuth = useTranslations("Auth")
+  const router = useRouter()
   const [email, setEmail] = useState<string | null>(null)
 
   useEffect(() => {
@@ -65,7 +67,7 @@ const VerifyOtpPage = () => {
         toast.success(data?.message)
         const role = roleService.get()
         const dashboard = role === 'manager' ? '/manager' : '/sales'
-        window.location.href = dashboard;
+        router.push(dashboard as any);
       }
     })
   }

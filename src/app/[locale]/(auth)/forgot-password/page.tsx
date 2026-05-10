@@ -1,8 +1,7 @@
 "use client"
-import { useRouter } from "next/navigation"
+import { useRouter, Link } from "@/i18n/routing"
 import FieldGroup from "@/components/ui/fieldGroup"
 import { toast } from "sonner"
-import Link from "next/link"
 import FormProviderWrapper from "../formWrapper"
 import { useTranslations } from "next-intl"
 

@@ -15,7 +15,14 @@ function decodeJwt(token: string) {
         .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
         .join('')
     );
-    return JSON.parse(jsonPayload);
+    const payload = JSON.parse(jsonPayload);
+    
+    // Check if token is expired (exp is in seconds)
+    if (payload.exp && Date.now() >= payload.exp * 1000) {
+      return null;
+    }
+    
+    return payload;
   } catch (e) {
     return null;
   }
@@ -34,17 +41,17 @@ export default function middleware(request: NextRequest) {
   const payload = token ? decodeJwt(token) : null;
   const role = payload?.role;
 
-  // Extract the segment after the locale (e.g., /en/dashboard -> dashboard)
   const segments = pathname.split('/').filter(Boolean);
+  const locale = routing.locales.includes(segments[0] as any) ? segments[0] : routing.defaultLocale;
   const hasLocale = routing.locales.includes(segments[0] as any);
   const currentRoute = hasLocale ? segments[1] : segments[0];
 
   if (role && publicRoutes.includes(currentRoute)) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL(`/${locale}`, request.url));
   }
 
   if (role === 'sales_rep' && SalesRepCanNotAccessTheseRoutes.includes(currentRoute)) {
-    return NextResponse.redirect(new URL('/unauthorized', request.url));
+    return NextResponse.redirect(new URL(`/${locale}/unauthorized`, request.url));
   }
 
   return response;

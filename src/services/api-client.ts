@@ -21,8 +21,20 @@ apiClient.interceptors.response.use(
         const status = error.response.status;
 
         if (status === 401) {
-            if (typeof window !== "undefined" && error.config?.url !== "/auth/login") {
-                apiClient.post("/auth/refresh")
+            const isAuthRequest = 
+                error.config?.url?.includes("/auth/login") || 
+                error.config?.url?.includes("/auth/refresh") || 
+                error.config?.url?.includes("/auth/logout");
+
+            const hasToken = typeof window !== "undefined" && !!document.cookie.includes("accessToken");
+
+            if (typeof window !== "undefined" && !isAuthRequest && hasToken) {
+                apiClient.post("/auth/refresh").catch(() => {
+                    // Refresh failed, clean up and redirect
+                    if (!window.location.pathname.includes("/login")) {
+                        window.location.href = "/login";
+                    }
+                });
             }
         }
 
