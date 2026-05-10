@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
+import { NextRequest, NextResponse } from 'next/server';
 import { SalesRepCanNotAccessTheseRoutes } from './constant.data/routes';
-const publicRoutes = ["login"]
+
+const publicRoutes = ["login"];
 
 function decodeJwt(token: string) {
   try {
@@ -19,31 +21,36 @@ function decodeJwt(token: string) {
   }
 }
 
-export function proxy(request: NextRequest) {
-  const token = request.cookies.get('accessToken')?.value;
-  const { pathname } = request.nextUrl;
+const intlMiddleware = createMiddleware(routing);
 
+export default function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  
+  // 1. Run intl middleware first to handle locales
+  const response = intlMiddleware(request);
+
+  // 2. Access control logic (formerly in proxy.ts)
+  const token = request.cookies.get('accessToken')?.value;
   const payload = token ? decodeJwt(token) : null;
   const role = payload?.role;
 
+  // Extract the segment after the locale (e.g., /en/dashboard -> dashboard)
   const segments = pathname.split('/').filter(Boolean);
+  const hasLocale = routing.locales.includes(segments[0] as any);
+  const currentRoute = hasLocale ? segments[1] : segments[0];
 
-  const currentRoute = segments[0];
   if (role && publicRoutes.includes(currentRoute)) {
-    return NextResponse.redirect(
-      new URL('/', request.url)
-    );
-  }
-  if (role === 'sales_rep' && SalesRepCanNotAccessTheseRoutes.includes(currentRoute)
-  ) {
-    return NextResponse.redirect(
-      new URL('/unauthorized', request.url)
-    );
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
-  return NextResponse.next();
+  if (role === 'sales_rep' && SalesRepCanNotAccessTheseRoutes.includes(currentRoute)) {
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
+  }
+
+  return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+  // Combine matchers from both
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
 };
