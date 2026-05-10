@@ -1,22 +1,18 @@
 "use client";
-
 import { useCallback, useMemo } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-
+import { useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "@/i18n/routing";
 type FilterValue = string | number | boolean | null | undefined;
-
 type SetFilterOptions = {
     resetKeys?: string[];
     replace?: boolean;
     scroll?: boolean;
 };
 
-export const useTableFilters = () => {
+export const useFilters = () => {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
-
-    // memoized parsed filters
     const filters = useMemo(
         () => Object.fromEntries(searchParams.entries()),
         [searchParams]
@@ -28,13 +24,9 @@ export const useTableFilters = () => {
             options?: SetFilterOptions
         ) => {
             const current = new URLSearchParams(searchParams.toString());
-
-            // remove selected keys
             options?.resetKeys?.forEach((key) => {
                 current.delete(key);
             });
-
-            // apply updates
             Object.entries(updates).forEach(([key, value]) => {
                 if (
                     value === "" ||

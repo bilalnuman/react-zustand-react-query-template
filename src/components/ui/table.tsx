@@ -113,14 +113,14 @@ const Table = <T extends Record<string, any>>({
             <div className={twMerge("w-full overflow-x-auto", isHeadingSticky && "overflow-y-auto",classNames?.table)}>
                 <table className="w-full text-left text-sm border-collapse">
                     <thead className={twMerge(
-                        "bg-gray-50 text-gray-600 font-medium border-b border-gray-200",
+                        "bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200",
                         isHeadingSticky && "sticky top-0 z-10 shadow-sm"
                     )}>
                         <tr>
                             {selectable && (
                                 <th className={twMerge(
-                                    "px-4 py-3 w-10",
-                                    isHeadingSticky && "bg-gray-50 sticky top-0 z-10"
+                                    "px-4 py-4 w-10",
+                                    isHeadingSticky && "bg-slate-50 sticky top-0 z-10"
                                 )}>
                                     <Checkbox
                                         checked={data.length > 0 && selectedIndices.size === data.length}
@@ -133,9 +133,9 @@ const Table = <T extends Record<string, any>>({
                                 <th
                                     key={column.key as string}
                                     className={twMerge(
-                                        "px-4 py-3 font-semibold transition-colors",
-                                        isHeadingSticky && "bg-gray-50 sticky top-0 z-10",
-                                        column.sortable && "cursor-pointer hover:bg-gray-100",
+                                        "px-4 py-4 transition-colors",
+                                        isHeadingSticky && "bg-slate-50 sticky top-0 z-10",
+                                        column.sortable && "cursor-pointer hover:bg-slate-100/80",
                                         column.className
                                     )}
                                     onClick={() => column.sortable && handleSort(column.key as string)}

@@ -7,7 +7,7 @@ import React from 'react'
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     return (
         <div className="flex min-h-screen">
-            <aside className="lg:flex hidden sticky top-0 min-h-screen max-h-screen w-64 bg-gray-100 px-2 pt-5 flex-col items-baseline justify-between gap-10">
+            <aside className="lg:flex hidden sticky top-0 min-h-screen max-h-screen w-64 bg-linear-to-b from-slate-900 via-slate-800 to-indigo-950 px-2 pt-5 flex-col justify-between gap-10 border-r border-slate-700/50 shadow-xl">
                 <Sidebar />
             </aside>
             <div className='flex-1 flex flex-col'>

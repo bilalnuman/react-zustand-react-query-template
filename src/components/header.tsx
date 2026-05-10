@@ -22,8 +22,10 @@ const Header = () => {
     ]
 
     return (
-        <header className='sticky top-0 z-10 bg-white min-h-[77px] border-b border-[#E5E5E5] flex items-center px-8 gap-4'>
-            Header Content
+        <header className='sticky top-0 z-10 bg-white/80 backdrop-blur-md min-h-[77px] border-b border-slate-200/60 flex items-center px-8 gap-4 shadow-[0_1px_2px_rgba(0,0,0,0.03)]'>
+            <div className='flex items-center gap-2'>
+                <h2 className='text-sm font-semibold text-slate-500 uppercase tracking-wider'>Workspace</h2>
+            </div>
             <div className='ml-auto flex items-center gap-6'>
                 <LocaleSwitcher />
                 <Dropdown

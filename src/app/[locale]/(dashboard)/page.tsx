@@ -8,9 +8,9 @@ import { useId, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 import { Icons } from "@/components/ui/icons";
-import Link from "next/link";
 import Select from "@/components/ui/select";
 import { useTranslations } from "next-intl";
+import { useFilters } from "@/hooks/useFilters";
 
 const ManagerPage = () => {
   const tForm = useTranslations("Form");
@@ -19,8 +19,8 @@ const ManagerPage = () => {
   const nameId = useId();
   const dropdownId = useId();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  
+  const { filters, setFilter } = useFilters()
+
   const {
     register,
     handleSubmit,
@@ -48,9 +48,9 @@ const ManagerPage = () => {
       [user.name, user.email, user.role, user.status]
         .join(" ")
         .toLowerCase()
-        .includes(search.toLowerCase())
+        .includes(filters?.search||"".toLowerCase())
     );
-  }, [search, users]);
+  }, [filters?.search, users]);
 
   const columns: Column<typeof users[0]>[] = [
     { key: "name", label: "Name", sortable: true },
@@ -163,8 +163,8 @@ const ManagerPage = () => {
             type="text"
             placeholder={tDash("searchPlaceholder")}
             className={twMerge("Input max-w-xs")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={filters?.search}
+            onChange={(e) => setFilter({ "search": e.target.value })}
           />
         </div>
         <Table
