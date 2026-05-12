@@ -155,3 +155,10 @@ input:-webkit-autofill:active {
   #2563eb
 )
 }
+
+.PhoneInput--focus{
+  @apply ring-3 ring-gray-200
+}
+.PhoneInput input{
+  @apply ps-0
+}

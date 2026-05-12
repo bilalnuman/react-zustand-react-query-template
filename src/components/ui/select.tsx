@@ -7,6 +7,7 @@ import { Icons } from "./icons";
 interface SelectProps extends UseSelectProps {
     onSelect?: (hook: UseSelectReturn) => void;
     placeholder?: string | React.ReactNode;
+    isPhone?:boolean;
     classNames?: {
         trigger?: string;
         dropdown?: string;
@@ -19,8 +20,7 @@ interface SelectProps extends UseSelectProps {
     };
 }
 
-const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: SelectProps) => {
-    const labelId = React.useId();
+const Select = ({ onSelect, placeholder = "Select...", classNames,isPhone=false, ...props }: SelectProps) => {
     const listboxId = React.useId();
     const hook = useSelect(props);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -83,7 +83,7 @@ const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: S
         }
         if (hook.value) {
             const selectedItem = hook.filtered.find(i => i.value === hook.value);
-            return selectedItem?.label || placeholder;
+            return  isPhone?selectedItem?.icon: selectedItem?.label || placeholder;
         }
         return placeholder
     };
@@ -98,7 +98,6 @@ const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: S
                         aria-expanded={hook.open}
                         aria-controls={listboxId}
                         aria-haspopup="listbox"
-                        aria-labelledby={labelId}
                         aria-label={
                             typeof placeholder === "string"
                                 ? placeholder
@@ -107,13 +106,9 @@ const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: S
                         className={twMerge(
                             "w-full flex items-center justify-between",
                             typeof placeholder === "string" ? "Input" : "",
-                            classNames?.trigger
+                            classNames?.trigger,
+                            hook.open?"ring-3 ring-gray-200":""
                         )}
-                    // className={twMerge(
-                    //     "w-full flex items-center justify-between",
-                    //     typeof placeholder === "string" ? "Input" : "",
-                    //     classNames?.trigger
-                    // )}
                     >
                         <span className={twMerge("truncate", classNames?.triggerContent)}>
                             {renderTriggerContent()}
@@ -144,7 +139,7 @@ const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: S
                         align="start"
                         sideOffset={4}
                         className={twMerge(
-                            "z-[9999] bg-white border border-gray-300 rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200",
+                            "z-[9999] bg-white border border-gray-300 rounded-lg shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 ",
                             classNames?.dropdown
                         )}
                         style={{ width: "var(--radix-popover-trigger-width)" }}
@@ -203,7 +198,7 @@ const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: S
                                                     classNames?.option
                                                 )}
                                             >
-                                                {item.icon && <span className="w-4 h-4 shrink-0">{item.icon}</span>}
+                                                {item.icon && <span className="shrink-0">{item.icon}</span>}
                                                 <div className="flex items-center gap-2 justify-between w-full">
                                                     <span className="flex-1 truncate">{item.label}</span>
                                                     {isSelected && <Icons.circleCheck />}

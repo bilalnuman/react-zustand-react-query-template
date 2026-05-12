@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import { useFilters } from "@/hooks/useFilters";
 import Drawer from "@/components/ui/Drawer";
 import PhoneInput from "@/components/ui/PhoneInput";
+import { Input } from "@/components/ui/input";
 
 const ManagerPage = () => {
   const [open, setOpen] = useState(false)
@@ -107,12 +108,14 @@ const ManagerPage = () => {
         </div>
       </div>
       <form onSubmit={handleSubmit((data) => {
+        console.log(data)
         // Form submitted
       })} className="mb-6">
         <div className="p-10 grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded shadow">
           <FieldGroup id={nameId} label={tForm("name")} errorMessage={errors.name?.message as string}>
-            <input id={nameId} className="Input" placeholder={tForm("namePlaceholder")} {...register("name", { required: tCommon("required") })} />
+            <Input id={nameId} placeholder={tForm("namePlaceholder")} {...register("name", { required: tCommon("required") })} />
           </FieldGroup>
+
           <FieldGroup id={dropdownId} label={tForm("dropdown")}
             errorMessage={errors.frontend?.message as string}
           >
@@ -172,10 +175,13 @@ const ManagerPage = () => {
               control={control}
               rules={{ required: tCommon("required") }}
               render={({ field }) => (
-                <PhoneInput
-                  {...field}
-                  errorMessage={errors.phone?.message as string}
-                />
+                <FieldGroup id={dropdownId} label={tForm("dropdown")}
+                  errorMessage={errors.frontend?.message as string}
+                >
+                  <PhoneInput
+                    {...field}
+                  />
+                </FieldGroup>
               )}
             />
           </div>

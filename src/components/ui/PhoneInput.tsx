@@ -1,9 +1,12 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useState, useMemo } from "react";
 import PhoneInputLib from "react-phone-number-input";
 import type { Country } from "react-phone-number-input";
 import "react-phone-number-input/style.css";
-import { getCountries, getCountryCallingCode } from "react-phone-number-input/input";
+import { getCountries } from "react-phone-number-input/input";
 import { isValidPhoneNumber } from "libphonenumber-js";
+import Select from "./select";
+import { Input } from "./input";
+import FieldGroup from "./fieldGroup";
 
 type PhoneInputProps = {
     value?: string;
@@ -15,28 +18,47 @@ type PhoneInputProps = {
     placeholder?: string;
     defaultCountry?: Country;
     allowedCountries?: Country[];
-    validateOnBlur?: boolean;
-    onValidate?: (isValid: boolean, value?: string) => void;
+    name?: string;
 };
 
-const formatCountryLabel = (country: Country) => {
-    return `${country} (+${getCountryCallingCode(country)})`;
-};
+/**
+ * Custom Country Select component using the project's Select component
+ */
+const CountrySelect = ({ value, onChange, options, disabled }: any) => {
+    console.log(options)
+    const items = useMemo(() => 
+        options.map((opt: { value: Country; label: string }) => ({
+            label: opt.label,
+            value: opt.value || "",
+            icon: opt.value ? (
+                <img 
+                    src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${opt.value}.svg`} 
+                    alt="" 
+                    className="w-6 h-5 rounded-sm object-cover" 
+                />
+            ) : null
+        })), [options]
+    );
 
-const CustomInput = React.forwardRef<HTMLInputElement, any>((props, ref) => {
-    const { errorMessage, internalError, ...rest } = props;
     return (
-        <input
-            {...rest}
-            ref={ref}
-            className="flex-1 outline-none text-sm"
-            aria-invalid={!!(errorMessage || internalError)}
-            aria-describedby={errorMessage || internalError ? "phone-error" : undefined}
+        <Select
+            items={items}
+            value={value}
+            onChange={(val) => onChange(val)}
+            // disabled={disabled}
+            isPhone={true}
+            isSearchable
+            isCaretIconVisible
+            classNames={{
+                trigger: "!border-0 !shadow-none !ring-0 !pe-2 !ps-3 min-w-0 bg-transparent focus:!ring-0 mt-0",
+                wrapper: "min-w-0 w-auto",
+                dropdown: "min-w-[300px]",
+                triggerContent:"text-lg"
+            }}
+            placeholder=""
         />
     );
-});
-
-CustomInput.displayName = "CustomInput";
+};
 
 const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     (
@@ -50,6 +72,7 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
             placeholder = "Enter phone number",
             defaultCountry = "PK",
             allowedCountries,
+            name,
         },
         ref
     ) => {
@@ -58,50 +81,44 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
 
         const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
             const val = e.target.value;
-            const isValid = isValidPhoneNumber(val);
-            if (!isValid) {
+            if (val && !isValidPhoneNumber(val)) {
                 setInternalError("Invalid phone number");
             } else {
                 setInternalError(undefined);
             }
         };
 
+        const error = errorMessage || internalError;
+
         return (
-            <div className="flex flex-col gap-1 w-full">
-                {/* Label (Accessible) */}
-                <label
-                    htmlFor="phone-input"
-                    className="text-sm font-medium text-gray-700"
-                >
-                    {label} {required && <span aria-label="required">*</span>}
-                </label>
-
-                <PhoneInputLib
-                    id="phone-input"
-                    international
-                    defaultCountry={defaultCountry}
-                    countries={countries}
-                    value={value}
-                    onChange={onChange!}
-                    disabled={disabled}
-                    placeholder={placeholder}
-                    className="flex items-center gap-2 border rounded-md px-3 py-2 Input"
-                    inputComponent={CustomInput}
-                    onBlur={handleBlur}
-                    error={errorMessage}
-                    internalError={internalError}
-                />
-
-                {(errorMessage || internalError) && (
-                    <span
-                        id="phone-error"
-                        role="alert"
-                        className="text-xs text-red-500"
-                    >
-                        {errorMessage || internalError}
-                    </span>
-                )}
-            </div>
+            <FieldGroup
+                label={label}
+                isRequired={required}
+                errorMessage={error}
+                id={name}
+            >
+                <div className="relative">
+                    <PhoneInputLib
+                        id={name}
+                        international
+                        defaultCountry={defaultCountry}
+                        countries={countries}
+                        value={value}
+                        onChange={onChange!}
+                        disabled={disabled}
+                        placeholder={placeholder}
+                        className="bg-transparent w-full border border-gray-300 rounded-lg focus:outline-none transition-all duration-300 focus:ring-3 focus:ring-gray-200"
+                        countrySelectComponent={CountrySelect}
+                        inputComponent={Input}
+                        onBlur={handleBlur}
+                        error={!!error}
+                        numberInputProps={{
+                            className: "border-0 focus:ring-0 rounded-none h-9 mt-0",
+                            wrapperClassName: "flex-1"
+                        }}
+                    />
+                </div>
+            </FieldGroup>
         );
     }
 );

@@ -30,7 +30,7 @@ const FieldGroup = ({
 }: FieldGroupProps) => {
     const Icon = icon ? Icons[icon] : null;
     return (
-        <div className={twMerge("flex flex-col", classNames?.wrapper)}>
+        <div className={twMerge("flex flex-col flex-1", classNames?.wrapper)}>
             <label htmlFor={id} className={twMerge("text-sm font-medium flex items-center gap-1", classNames?.label)} data-slot="form-lable" data-error={errorMessage?true:false}>
                 {Icon && (<Icon size={iconSize} className={twMerge("me-1", classNames?.icon)} />)}
                 {label}
