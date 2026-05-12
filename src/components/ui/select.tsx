@@ -1,5 +1,5 @@
 import { twMerge } from "tailwind-merge";
-import { useRef, useEffect, memo, useState } from "react";
+import React, { useRef, useEffect, memo, useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { UseSelectReturn, SelectItem, useSelect, UseSelectProps } from "@/hooks/useSelect";
 import { Icons } from "./icons";
@@ -20,6 +20,8 @@ interface SelectProps extends UseSelectProps {
 }
 
 const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: SelectProps) => {
+    const labelId = React.useId();
+    const listboxId = React.useId();
     const hook = useSelect(props);
     const inputRef = useRef<HTMLInputElement>(null);
     const [highlightIndex, setHighlightIndex] = useState(0);
@@ -83,7 +85,7 @@ const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: S
             const selectedItem = hook.filtered.find(i => i.value === hook.value);
             return selectedItem?.label || placeholder;
         }
-        return placeholder;
+        return placeholder
     };
 
     return (
@@ -94,11 +96,24 @@ const Select = ({ onSelect, placeholder = "Select...", classNames, ...props }: S
                         type="button"
                         role="combobox"
                         aria-expanded={hook.open}
+                        aria-controls={listboxId}
+                        aria-haspopup="listbox"
+                        aria-labelledby={labelId}
+                        aria-label={
+                            typeof placeholder === "string"
+                                ? placeholder
+                                : "Select option"
+                        }
                         className={twMerge(
                             "w-full flex items-center justify-between",
                             typeof placeholder === "string" ? "Input" : "",
                             classNames?.trigger
                         )}
+                    // className={twMerge(
+                    //     "w-full flex items-center justify-between",
+                    //     typeof placeholder === "string" ? "Input" : "",
+                    //     classNames?.trigger
+                    // )}
                     >
                         <span className={twMerge("truncate", classNames?.triggerContent)}>
                             {renderTriggerContent()}

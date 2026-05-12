@@ -109,8 +109,8 @@ const Table = <T extends Record<string, any>>({
     };
 
     return (
-        <div className={twMerge("w-full flex flex-col rounded-lg border border-gray-200 bg-white",classNames?.container)}>
-            <div className={twMerge("w-full overflow-x-auto", isHeadingSticky && "overflow-y-auto",classNames?.table)}>
+        <div className={twMerge("w-full flex flex-col rounded-lg border border-gray-200 bg-white", classNames?.container)}>
+            <div className={twMerge("w-full overflow-x-auto", isHeadingSticky && "overflow-y-auto", classNames?.table)}>
                 <table className="w-full text-left text-sm border-collapse">
                     <thead className={twMerge(
                         "bg-slate-50 text-slate-500 uppercase text-[11px] font-bold tracking-wider border-b border-slate-200",
@@ -213,8 +213,14 @@ const Table = <T extends Record<string, any>>({
 
                 <div className="flex items-center gap-8">
                     <div className="flex items-center gap-2">
-                        <span>Rows per page</span>
+                        <label
+                            htmlFor="rows-per-page"
+                            className="text-sm"
+                        >
+                            Rows per page
+                        </label>
                         <select
+                            id="rows-per-page"
                             value={pageSize}
                             onChange={(e) => {
                                 setPageSize(Number(e.target.value));
@@ -233,34 +239,138 @@ const Table = <T extends Record<string, any>>({
                             Page {currentPage} of {totalPages || 1}
                         </span>
 
-                        <div className="flex items-center gap-1">
+                        <div
+                            className="flex items-center gap-1"
+                            role="group"
+                            aria-label="Pagination Navigation"
+                        >
+                            {/* First Page */}
+
                             <button
+                                type="button"
+                                aria-label="Go to first page"
                                 onClick={() => setCurrentPage(1)}
                                 disabled={currentPage === 1}
-                                className="p-1.5 rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="
+      p-1.5
+      rounded
+      border
+      border-gray-200
+
+      hover:bg-gray-50
+
+      focus-visible:outline-none
+      focus-visible:ring-2
+      focus-visible:ring-blue-500/40
+
+      disabled:opacity-50
+      disabled:cursor-not-allowed
+    "
                             >
-                                <Icons.chevronsLeft size={16} />
+                                <Icons.chevronsLeft
+                                    aria-hidden="true"
+                                    size={16}
+                                />
                             </button>
+
+                            {/* Previous Page */}
+
                             <button
-                                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                type="button"
+                                aria-label="Go to previous page"
+                                onClick={() =>
+                                    setCurrentPage(prev => Math.max(1, prev - 1))
+                                }
                                 disabled={currentPage === 1}
-                                className="p-1.5 rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="
+      p-1.5
+      rounded
+      border
+      border-gray-200
+
+      hover:bg-gray-50
+
+      focus-visible:outline-none
+      focus-visible:ring-2
+      focus-visible:ring-blue-500/40
+
+      disabled:opacity-50
+      disabled:cursor-not-allowed
+    "
                             >
-                                <Icons.chevronLeft size={16} />
+                                <Icons.chevronLeft
+                                    aria-hidden="true"
+                                    size={16}
+                                />
                             </button>
+
+                            {/* Next Page */}
+
                             <button
-                                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                disabled={currentPage === totalPages || totalPages === 0}
-                                className="p-1.5 rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                type="button"
+                                aria-label="Go to next page"
+                                onClick={() =>
+                                    setCurrentPage(prev =>
+                                        Math.min(totalPages, prev + 1)
+                                    )
+                                }
+                                disabled={
+                                    currentPage === totalPages ||
+                                    totalPages === 0
+                                }
+                                className="
+      p-1.5
+      rounded
+      border
+      border-gray-200
+
+      hover:bg-gray-50
+
+      focus-visible:outline-none
+      focus-visible:ring-2
+      focus-visible:ring-blue-500/40
+
+      disabled:opacity-50
+      disabled:cursor-not-allowed
+    "
                             >
-                                <Icons.chevronRight size={16} />
+                                <Icons.chevronRight
+                                    aria-hidden="true"
+                                    size={16}
+                                />
                             </button>
+
+                            {/* Last Page */}
+
                             <button
+                                type="button"
+                                aria-label="Go to last page"
                                 onClick={() => setCurrentPage(totalPages)}
-                                disabled={currentPage === totalPages || totalPages === 0}
-                                className="p-1.5 rounded border border-gray-200 hover:bg-gray-50 rotate-180 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={
+                                    currentPage === totalPages ||
+                                    totalPages === 0
+                                }
+                                className="
+      p-1.5
+      rounded
+      border
+      border-gray-200
+
+      hover:bg-gray-50
+
+      focus-visible:outline-none
+      focus-visible:ring-2
+      focus-visible:ring-blue-500/40
+
+      disabled:opacity-50
+      disabled:cursor-not-allowed
+      rotate-180
+    "
                             >
-                                <Icons.chevronsLeft size={16} />
+                                <Icons.chevronsLeft
+                                    aria-hidden="true"
+                                    size={16}
+                                />
                             </button>
                         </div>
                     </div>

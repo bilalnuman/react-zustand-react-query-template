@@ -2,113 +2,209 @@ import * as React from "react";
 import { twMerge } from "tailwind-merge";
 import { Icons } from "./icons";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
 
-type ButtonVariant = "default" | "outline" | "secondary" | "ghost" | "destructive" | "link";
-type ButtonSize = "default" | "xs" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg";
+type ButtonVariant =
+    | "default"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "destructive"
+    | "link";
+
+type ButtonSize =
+    | "default"
+    | "xs"
+    | "sm"
+    | "lg"
+    | "icon"
+    | "icon-xs"
+    | "icon-sm"
+    | "icon-lg";
+
 type IconPosition = "start" | "end";
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+    extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: ButtonVariant;
     size?: ButtonSize;
+
     isLoading?: boolean;
     loadingText?: string;
+
     icon?: React.ReactNode;
     iconPosition?: IconPosition;
 }
 
-// ─── Variant classes ──────────────────────────────────────────────────────────
-
 const variantClasses: Record<ButtonVariant, string> = {
     default:
-        "bg-dark-900 hover:bg-dark-900/80 text-white",
+        "bg-dark-900 text-white hover:bg-dark-900/90",
+
     outline:
-        "border border-border bg-background border-gray-300 hover:opacity-70 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
+        "border border-gray-300 bg-background hover:bg-muted hover:text-foreground",
+
     secondary:
-        "bg-secondary text-secondary-foreground hover:bg-secondary/80 aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+        "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+
     ghost:
-        "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
+        "hover:bg-muted hover:text-foreground",
+
     destructive:
-        "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20",
-    link: "text-primary underline-offset-4 hover:underline",
+        "bg-destructive text-white hover:bg-destructive/90",
+
+    link:
+        "h-auto p-0 text-primary underline-offset-4 hover:underline",
 };
-
-// ─── Size classes ─────────────────────────────────────────────────────────────
-
 const sizeClasses: Record<ButtonSize, string> = {
-    default: "h-11 gap-1.5 px-2.5",
-    xs: "h-6 gap-1 rounded-[10px] px-2 text-xs [&_svg]:size-3",
-    sm: "h-7 gap-1 rounded-[12px] px-2.5 text-[0.8rem] [&_svg]:size-3.5",
-    lg: "h-9 gap-1.5 px-2.5",
-    "icon": "size-8",
-    "icon-xs": "size-6 rounded-[10px] [&_svg]:size-3",
-    "icon-sm": "size-7 rounded-[12px]",
-    "icon-lg": "size-9",
+    default:
+        "h-11 px-4 gap-2",
+
+    xs:
+        "h-6 rounded-md px-2 text-xs gap-1 [&_svg]:size-3",
+
+    sm:
+        "h-8 rounded-md px-3 text-sm gap-1.5 [&_svg]:size-4",
+
+    lg:
+        "h-12 rounded-xl px-6 text-base gap-2 [&_svg]:size-5",
+
+    icon:
+        "size-11",
+
+    "icon-xs":
+        "size-6 rounded-md [&_svg]:size-3",
+
+    "icon-sm":
+        "size-8 rounded-md [&_svg]:size-4",
+
+    "icon-lg":
+        "size-12 rounded-xl [&_svg]:size-5",
 };
+const baseClasses = `
+inline-flex
+items-center
+justify-center
+shrink-0
+relative
 
-// ─── Base classes ─────────────────────────────────────────────────────────────
+rounded-lg
+font-medium
+whitespace-nowrap
 
-const baseClasses =
-    "inline-flex shrink-0 items-center justify-center rounded-lg border cursor-pointer relative border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none " +
-    "focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 " +
-    "active:translate-y-px " +
-    "disabled:pointer-events-none disabled:opacity-50 " +
-    "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg]:size-4";
+select-none
+cursor-pointer
 
+outline-none
 
-// ─── Component ────────────────────────────────────────────────────────────────
+transition-colors
+transition-transform
+motion-reduce:transition-none
+
+focus-visible:outline-none
+focus-visible:ring-2
+focus-visible:ring-ring/50
+
+disabled:pointer-events-none
+disabled:opacity-50
+
+active:scale-[0.98]
+
+[&_svg]:pointer-events-none
+[&_svg]:shrink-0
+`;
+
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     (
         {
             className,
+
             variant = "default",
             size = "default",
+
             type = "button",
+
             isLoading = false,
             loadingText,
+
             icon,
             iconPosition = "start",
+
             disabled,
             children,
+
             ...props
         },
         ref
     ) => {
         const isDisabled = disabled || isLoading;
 
+        if (process.env.NODE_ENV !== "production") {
+            const isIconOnly = size.includes("icon") && !children;
+
+            if (isIconOnly && !props["aria-label"]) {
+                console.warn(
+                    "[Button]: Icon-only buttons must include an aria-label."
+                );
+            }
+        }
+
         return (
             <button
                 ref={ref}
                 type={type}
+                disabled={isDisabled}
+                aria-disabled={isDisabled}
+                aria-busy={isLoading}
                 data-variant={variant}
                 data-size={size}
-                disabled={isDisabled}
-                aria-busy={isLoading}
                 className={twMerge(
                     baseClasses,
                     variantClasses[variant],
                     sizeClasses[size],
-                    className,
+                    className
                 )}
                 {...props}
             >
-                {isLoading ? (
-                    <>
-                        {loadingText ?? children}
-                        <Icons.spinner className="absolute end-3" size={26}/>
-                    </>
-                ) : (
-                    <>
-                        {icon && iconPosition === "start" && (
-                            <span className="shrink-0 [&_svg]:size-4">{icon}</span>
-                        )}
-                        {children}
-                        {icon && iconPosition === "end" && (
-                            <span className="shrink-0 [&_svg]:size-4">{icon}</span>
-                        )}
-                    </>
+                {isLoading && (
+                    <span
+                        className="absolute inset-0 flex items-center justify-center"
+                        aria-live="polite"
+                    >
+                        <Icons.spinner
+                            aria-hidden="true"
+                            className="animate-spin"
+                            size={18}
+                        />
+                    </span>
                 )}
+                <span
+                    className={twMerge(
+                        "inline-flex items-center justify-center gap-2",
+                        isLoading && "opacity-0"
+                    )}
+                >
+                    {icon && iconPosition === "start" && (
+                        <span
+                            aria-hidden="true"
+                            className="inline-flex shrink-0"
+                        >
+                            {icon}
+                        </span>
+                    )}
+
+                    <span>
+                        {isLoading ? loadingText ?? children : children}
+                    </span>
+
+                    {icon && iconPosition === "end" && (
+                        <span
+                            aria-hidden="true"
+                            className="inline-flex shrink-0"
+                        >
+                            {icon}
+                        </span>
+                    )}
+                </span>
             </button>
         );
     }
@@ -117,4 +213,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = "Button";
 
 export { Button };
-export type { ButtonProps, ButtonVariant, ButtonSize };
+export type {
+    ButtonVariant,
+    ButtonSize,
+};

@@ -63,8 +63,7 @@ export const useApiMutation = <TData, TVariables>({
     },
     onError: (error: Error, variables, context) => {
       const apiError = error as any;
-      console.log(apiError)
-      const errorCode = apiError?.response?.data?.code || "unknown_error";
+      const errorCode = apiError?.errorCode || apiError?.response?.data?.errorCode || "unknown_error";
       
       const message = errorMessage || 
         (tError.has(errorCode) ? tError(errorCode) : (apiError?.response?.data?.detail || apiError?.message || tError("unknown_error")));

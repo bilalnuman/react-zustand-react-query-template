@@ -27,10 +27,10 @@ apiClient.interceptors.response.use(
                 error.config?.url?.includes("/auth/logout");
 
             const hasToken = typeof window !== "undefined" && !!document.cookie.includes("accessToken");
+            console.log(hasToken,'hasToken')
 
             if (typeof window !== "undefined" && !isAuthRequest && hasToken) {
                 apiClient.post("/auth/refresh").catch(() => {
-                    // Refresh failed, clean up and redirect
                     if (!window.location.pathname.includes("/login")) {
                         window.location.href = "/login";
                     }
@@ -48,18 +48,21 @@ apiClient.interceptors.response.use(
         const errorData = error?.response?.data;
 
         let message = 'Something went wrong';
+        let errorCode = errorData?.errorCode;
 
         if (errorData) {
-            const { statusCode, timestamp, path, ...cleaned } = errorData;
+            const { statusCode, timestamp, path, errorCode: dataErrorCode, ...cleaned } = errorData;
 
             message = Object.values(cleaned)
                 .flat()
-                .join(', ');
+                .join(', ') || dataErrorCode || 'Something went wrong';
         }
 
         return Promise.reject({
             message,
             status,
+            errorCode,
+            response: error.response 
         });
     }
 );

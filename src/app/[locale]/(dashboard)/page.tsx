@@ -11,8 +11,11 @@ import { Icons } from "@/components/ui/icons";
 import Select from "@/components/ui/select";
 import { useTranslations } from "next-intl";
 import { useFilters } from "@/hooks/useFilters";
+import Drawer from "@/components/ui/Drawer";
+import PhoneInput from "@/components/ui/PhoneInput";
 
 const ManagerPage = () => {
+  const [open, setOpen] = useState(false)
   const tForm = useTranslations("Form");
   const tDash = useTranslations("Dashboard");
   const tCommon = useTranslations("Common");
@@ -31,7 +34,8 @@ const ManagerPage = () => {
       name: "",
       frontend: "",
       backend: "",
-      status: true
+      status: true,
+      phone: ""
     }
   })
 
@@ -48,7 +52,7 @@ const ManagerPage = () => {
       [user.name, user.email, user.role, user.status]
         .join(" ")
         .toLowerCase()
-        .includes(filters?.search||"".toLowerCase())
+        .includes(filters?.search || "".toLowerCase())
     );
   }, [filters?.search, users]);
 
@@ -71,11 +75,22 @@ const ManagerPage = () => {
     },
   ];
 
+  console.log(errors)
+
   return (
     <>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">{tDash("title")}</h1>
         <div>
+          <button
+            onClick={() => setOpen(true)}
+            className="
+          px-5 py-3 rounded-xl
+          bg-cyan-500 text-white
+        "
+          >
+            Open Drawer
+          </button>
           <Modal
             title={<><Icons.warning className="mx-auto text-yellow-400 mb-5" size={50} /> Delete User</>}
             description="Are you sure you want to delete this user? This action cannot be undone."
@@ -151,6 +166,19 @@ const ManagerPage = () => {
               )}
             />
           </div>
+          <div className="flex items-end pb-2">
+            <Controller
+              name="phone"
+              control={control}
+              rules={{ required: tCommon("required") }}
+              render={({ field }) => (
+                <PhoneInput
+                  {...field}
+                  errorMessage={errors.phone?.message as string}
+                />
+              )}
+            />
+          </div>
         </div>
 
         <Button type="submit" className="mt-4" disabled={!isDirty}>{tCommon("submit")}</Button>
@@ -180,6 +208,16 @@ const ManagerPage = () => {
           }}
         />
       </div>
+
+
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        title="User Settings"
+        position="right"
+      >
+        sdffdsfds
+      </Drawer>
 
     </>
   )

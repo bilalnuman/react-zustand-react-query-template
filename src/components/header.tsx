@@ -29,9 +29,15 @@ const Header = () => {
             <div className='ml-auto flex items-center gap-6'>
                 <LocaleSwitcher />
                 <Dropdown
-                    trigger={<button className='flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 cursor-pointer'>
-                        <span className='w-12 h-12 rounded-full border overflow-clip'>
-                            <img src={user?.profile_url||""} width={48} height={48} alt='profile'/>
+                    trigger={<button
+                        aria-label={
+                            user?.name
+                                ? `${user.name} account menu`
+                                : "Open account menu"
+                        }
+                        className='flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-gray-900 cursor-pointer'>
+                        <span aria-hidden="true" className='w-12 h-12 rounded-full border overflow-clip'>
+                            {user?.profile_url && <img aria-hidden="true" src={user?.profile_url} width={48} height={48} alt=""/>}
                         </span>
                         {user?.name}
                     </button>}

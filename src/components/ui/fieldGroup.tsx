@@ -1,6 +1,5 @@
 import { twMerge } from "tailwind-merge";
 import { Icons } from "./icons";
-
 interface FieldGroupProps {
     label: string;
     id?: string;
@@ -16,24 +15,33 @@ interface FieldGroupProps {
         description?: string;
         errorMessage?: string;
         icon?: string;
-
     }
 }
-const FieldGroup = ({ label, id, description, children, icon, isRequired, errorMessage, classNames, iconSize=16 }: FieldGroupProps) => {
-    const Icon = Icons[icon as keyof typeof Icons];
+const FieldGroup = ({
+    label,
+    id,
+    description,
+    children,
+    icon,
+    isRequired,
+    errorMessage,
+    classNames,
+    iconSize = 16
+}: FieldGroupProps) => {
+    const Icon = icon ? Icons[icon] : null;
     return (
-        <div className={twMerge("flex flex-col",classNames?.wrapper)}>
-            <label htmlFor={id} className={twMerge(`text-sm font-medium flex items-center gap-2 ${classNames?.label || ''}`)}>
-                <span className="flex items-center gap-1">
-                    {Icon && <Icon size={iconSize} className={twMerge("me-1", classNames?.icon)} />}
-                    {label}
-                    {isRequired && <sup className="text-red-500 text-base top-0">*</sup>}
-                </span>
-                {description && <p className={twMerge(`text-gray-500 text-xs ${classNames?.description || ''}`)}>{description}</p>}
+        <div className={twMerge("flex flex-col", classNames?.wrapper)}>
+            <label htmlFor={id} className={twMerge("text-sm font-medium flex items-center gap-1", classNames?.label)} data-slot="form-lable" data-error={errorMessage?true:false}>
+                {Icon && (<Icon size={iconSize} className={twMerge("me-1", classNames?.icon)} />)}
+                {label}
+                {isRequired && (<sup className="text-red-500 text-xs" aria-hidden="true">*</sup>)}
             </label>
-            <div className="flex-1">
+            {description && (
+                <p className={twMerge("text-gray-500 text-xs mt-0.5", classNames?.description)}>{description}</p>
+            )}
+            <div className="flex-1 mt-1">
                 {children}
-                {errorMessage && <p className={twMerge(`text-red-500 text-sm ${classNames?.errorMessage || ''}`)}>{errorMessage}</p>}
+                {errorMessage && (<p role="alert" className={twMerge("text-red-500 text-sm mt-1", classNames?.errorMessage)}> {errorMessage}</p>)}
             </div>
         </div>
     )

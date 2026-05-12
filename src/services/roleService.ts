@@ -1,4 +1,4 @@
-import { useAuthStore } from "@/store/use-auth-store";
+import { useAuthStore, AuthStoreState } from "@/store/use-auth-store";
 
 const ROLE_KEY = "userRole";
 
@@ -6,7 +6,8 @@ export const roleService = {
     get: () => {
         if (typeof window === "undefined") return null;
 
-        const storeRole = useAuthStore.getState().userRole;
+        const state = useAuthStore.getState() as AuthStoreState;
+        const storeRole = state.userRole;
         if (storeRole) return storeRole;
 
         const name = ROLE_KEY + "=";

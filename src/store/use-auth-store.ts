@@ -9,13 +9,17 @@ export interface User {
   role: 'manager' | 'sales_rep';
 }
 
-interface AuthState {
+export interface AuthStoreState {
   user: User | null;
+  accessToken: string | null;
+  userRole: string | null;
   setUser: (user: User | null) => void;
+  setToken: (token: string | null) => void;
+  setRole: (role: string | null) => void;
   clearAuth: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
+export const useAuthStore = create<AuthStoreState>()(
   devtools(
     persist(
       (set) => ({
@@ -26,8 +30,14 @@ export const useAuthStore = create<AuthState>()(
         setUser: (user) =>
           set({ user }),
 
+        setToken: (token) =>
+          set({ accessToken: token }),
+
+        setRole: (role) =>
+          set({ userRole: role }),
+
         clearAuth: () =>
-          set({ user: null }),
+          set({ user: null, accessToken: null, userRole: null }),
       }),
       {
         name: 'auth-persistence',

@@ -18,8 +18,8 @@ RadioGroup.displayName = RadioGroupPrimitive.Root.displayName;
 
 const RadioGroupItem = React.forwardRef<
     React.ComponentRef<typeof RadioGroupPrimitive.Item>,
-    React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item> & { label?: string }
->(({ className, label, id, ...props }, ref) => {
+    React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item> & { label?: string,labelClass?:string }
+>(({ className, label, id,labelClass, ...props }, ref) => {
     return (
         <div className="flex items-center space-x-2">
             <div className="relative flex items-center justify-center">
@@ -40,7 +40,7 @@ const RadioGroupItem = React.forwardRef<
             {label && (
                 <label
                     htmlFor={id}
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-gray-700"
+                    className={twMerge("text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-gray-700",labelClass)}
                 >
                     {label}
                 </label>

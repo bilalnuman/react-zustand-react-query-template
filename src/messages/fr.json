@@ -14,7 +14,10 @@
     "errorOccurred": "Une erreur s'est produite. Veuillez réessayer.",
     "logout": "Se déconnecter",
     "profile": "Profil",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "draft": "Draft",
+    "next": "Next",
+    "back": "Back"
   },
   "Sidebar": {
     "dashboard": "Tableau de bord",
@@ -23,7 +26,8 @@
     "team": "Équipe",
     "kpis": "KPI",
     "aiBrief": "Brief IA",
-    "commission": "Commission"
+    "commission": "Commission",
+    "settings": "Paramètres"
   },
   "Form": {
     "name": "Nom",
@@ -104,7 +108,7 @@
     "invalid_file_type": "Ce type de fichier n'est pas pris en charge.",
     "permission_denied": "Permission refusée.",
     "validation_error": "Veuillez vérifier les informations fournies.",
-    "invalid_credentials":"Identifiants invalides"
+    "invalid_credentials": "Identifiants invalides"
   },
   "SuccessMessages": {
     "login_success": "Connexion réussie.",

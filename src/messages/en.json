@@ -14,7 +14,10 @@
     "errorOccurred": "An error occurred. Please try again.",
     "logout": "Logout",
     "profile": "Profile",
-    "settings": "Settings"
+    "settings": "Settings",
+    "draft": "Draft",
+    "next": "Next",
+    "back":"Back"
   },
   "Sidebar": {
     "dashboard": "Dashboard",
@@ -23,6 +26,7 @@
     "team": "Team",
     "kpis": "KPIs",
     "aiBrief": "AI Brief",
+    "settings": "Settings",
     "commission": "Commission"
   },
   "Form": {
@@ -104,7 +108,7 @@
     "invalid_file_type": "This file type is not supported.",
     "permission_denied": "Permission denied.",
     "validation_error": "Please check the information you provided.",
-    "invalid_credentials":"Invalid credentials"
+    "invalid_credentials": "Invalid credentials"
   },
   "SuccessMessages": {
     "login_success": "Successfully logged in.",

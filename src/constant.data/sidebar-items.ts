@@ -29,6 +29,12 @@ export const sidebarItems = [
         path: "/ai-brief",
         icon: "file"
     },
+        {
+        label: "Settings",
+        path: "/settings",
+        icon: "settings",
+        size:24,
+    },
     {
         label: "Commission",
         path: "/commission",
